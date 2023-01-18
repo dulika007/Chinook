@@ -1,0 +1,56 @@
+﻿@page "/"
+@attribute [Authorize]
+
+@using Chinook.Models
+@using Chinook.Repositories.Interfaces
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Index</PageTitle>
+
+<h1>Artists</h1>
+
+@if (Artists == null)
+{
+    <Loading />
+}
+else
+{
+    <table class="table table-striped table-hover table-sm">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Number of albums</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var artist in Artists)
+            {
+                <tr>
+                    <td><a href="Artist/@artist.ArtistId">@artist.Name</a></td>
+                    <td>@artist.Albums.Count()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<Artist> Artists;
+    [Inject] IArtistRepository ArtistRepository { get; set; }
+    [Inject] IAlbumRepository AlbumRepository { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        await InvokeAsync(StateHasChanged);
+        Artists = await GetArtists();
+    }
+
+    public async Task<IEnumerable<Artist>> GetArtists()
+    {
+        return await ArtistRepository.GetAllAsync();
+    }
+
+    public async Task<IEnumerable<Album>> GetAlbumsForArtist(int artistId)
+    {
+        return await AlbumRepository.GetByArtistIdAsync(artistId);
+    }
+}

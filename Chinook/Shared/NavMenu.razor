@@ -1,0 +1,60 @@
+﻿@using Chinook.Repositories.Interfaces
+@using Chinook.ClientModels
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Chinook</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span>Home
+            </NavLink>
+        </div>
+        @foreach (var item in Playlist)
+        {
+            string menuLink = "playlist/" + @item.PlaylistId.ToString();
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@menuLink">
+                    <i class="bi bi-music-note-list me-3" style="font-size: 1.25em"></i>@item.Name
+                </NavLink>
+            </div>
+        }
+
+    </nav>
+</div>
+
+@code {
+    [Inject] IPlaylistRepository PlaylistRepository { get; set; }
+    
+    private List<Chinook.ClientModels.Playlist> Playlist;
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Playlist = new List<Playlist>();
+        var playListResult = await PlaylistRepository.GetAllAsync();
+        foreach (var item in playListResult)
+        {
+            var playlist = new Playlist()
+            {
+                PlaylistId = item.PlaylistId,
+                Name = item.Name
+            };
+            Playlist.Add(playlist);
+        }
+        
+    } 
+}
