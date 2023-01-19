@@ -60,3 +60,17 @@
         display: block;
     }
 }
+
+.nav {
+    display: inline-block;
+}
+
+.scroll {
+    white-space: nowrap;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#navDiv{
+    height: 1000px;
+}
