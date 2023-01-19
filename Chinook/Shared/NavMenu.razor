@@ -1,5 +1,7 @@
 ﻿@using Chinook.Repositories.Interfaces
 @using Chinook.ClientModels
+@inject INavMenuService NavMenuService
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Chinook</a>
@@ -32,7 +34,7 @@
 @code {
     [Inject] IPlaylistRepository PlaylistRepository { get; set; }
     
-    private List<Chinook.ClientModels.Playlist> Playlist;
+    private List<Chinook.ClientModels.Playlist> Playlist = new();
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -44,17 +46,23 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Playlist = new List<Playlist>();
+        await GetPlayListData();
+        NavMenuService.OnChanged = MenuChanged;
+    }
+
+    private async Task GetPlayListData()
+    {
         var playListResult = await PlaylistRepository.GetAllAsync();
-        foreach (var item in playListResult)
+        Playlist = playListResult.Select(i => new Playlist()
         {
-            var playlist = new Playlist()
-            {
-                PlaylistId = item.PlaylistId,
-                Name = item.Name
-            };
-            Playlist.Add(playlist);
-        }
-        
-    } 
+            PlaylistId = i.PlaylistId,
+            Name = i.Name
+        }).ToList();
+    }
+    
+    private async Task MenuChanged()
+    {
+        await GetPlayListData();
+        StateHasChanged();
+    }
 }

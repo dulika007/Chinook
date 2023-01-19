@@ -24,6 +24,7 @@ builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<ITrackRepository, TrackRepository>();
 builder.Services.AddScoped<IUserPlaylistRepository, UserPlaylistRepository>();
+builder.Services.AddSingleton<INavMenuService, NavMenuService>();
 
 var app = builder.Build();
 

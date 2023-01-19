@@ -6,6 +6,7 @@
 @using Chinook.Migrations
 @using Chinook.Repositories.Interfaces
 @using Playlist = Chinook.Models.Playlist
+@inject INavMenuService NavMenuService
 
 <div class="d-flex">
     <h1>Playlist <strong>@Playlist.Name</strong></h1>
@@ -202,6 +203,7 @@ else
         await PlaylistRepository.SaveAsync();
         InfoMessage = $"Saved Successfully!";
         PlaylistEditDialog.Close();
+        await NavMenuService.NotifyChanged();
     }
     
     private async Task DeletePlaylist() // Delete play list
